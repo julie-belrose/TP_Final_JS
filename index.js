@@ -1,3 +1,15 @@
+const BASE_URL = "https://random-word-api.herokuapp.com/";
+const MAX_TEST = 5;
+const wordToGuess = ' ';
+const currentWordProposed = ' ';
+const allWordSolution = [];
+const currentLettersKeyboards = [];
+const LENGTH_WORD_TO_GUESS = 0;
+
+const colorValid = '#008000';
+const colorSemiValid = '#FFD700'
+
+
 //call API
     //for give 10 words
 
@@ -6,7 +18,7 @@
 //add function to calculate tests
 
 // ---
-//add function to delete keylisten keyboard
+//add function to delete key listen keyboard
 
 //add function to check word proposed if exists
 
@@ -18,7 +30,14 @@
 
 //display letter in div
 
-//add function to listen the keybord
+//add function to check type of content enter in keyboard
+    // switch case
+            //si Enter
+           //si Escape
+           // Si string
+          //default -> send error
+
+//add function to listen the keyboard
         //si good number of data  function to stock listen keyboard => function to stop listen keyboard
 // ---
 
