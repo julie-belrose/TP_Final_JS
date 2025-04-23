@@ -86,7 +86,6 @@ const generateTabFortTest = () =>{
         let tab = generatePosition( wordToGuess, true);
         currentLettersKeyboards.push(tab);
     }
-    // console.table(currentLettersKeyboards);
 };
 
 // ---
@@ -101,11 +100,11 @@ const deleteLetter = () =>{
             };
             console.log('deleteLetter');
             console.table(currentWordProposed);
+            updateRender('container_current_world', currentWordProposed);
         }
 };
 
 //add function to check word proposed if exists
-
 const saveNewProposition = (currentWordProposed) => {
     console.log(`saveNewProposition`);
     currentLettersKeyboards[currentTest] = [...currentWordProposed];
@@ -118,7 +117,6 @@ const newCycleProp = ()=>{
     console.log(`currentTes actual : ${currentTest}`);
     currentWordProposed = [];
     currentWordProposed = generatePosition(wordToGuess, true);
-    // listenKeyboard();
 }
 
 const addStatutForNewProp = () => {
@@ -155,6 +153,8 @@ const checkConditionValidation= () =>{
 
     if (isFull){
         addStatutForNewProp()
+        renderWordBlocks('container_word', currentLettersKeyboards);
+        applyStatusClassesToLastBlockLetters(currentWordProposed);
         saveNewProposition(currentWordProposed);
         const result = isGoodProp();
         console.log(result);
@@ -175,6 +175,7 @@ const stockLettersProposed = (letter) =>{
     console.log('currentLetter in stockLettersProposed ' + letter);
     if (regexLettersFrench.test(letter)){
         const emptyIndex = currentWordProposed.findIndex(obj => obj.value === ' ');
+
         if (emptyIndex !== -1) {
             currentWordProposed[emptyIndex] = {
                 ...currentWordProposed[emptyIndex],
@@ -183,7 +184,9 @@ const stockLettersProposed = (letter) =>{
             console.log('currentWordProposed');
             console.table(currentWordProposed);
         }
+
     }
+    updateRender('container_current_world', currentWordProposed);
     return currentWordProposed;
 };
 
@@ -210,6 +213,7 @@ const listenKeyboard = () => {
             console.log(`cond codeKeyLetter`);
         }
 
+        if (currentTest !== MAX_TEST){
             switch (key) {
                 case 'Backspace': //delete
                     console.log("Backspace key");
@@ -226,6 +230,7 @@ const listenKeyboard = () => {
                 default:
                     return console.error(`this key ${key.toUpperCase()} is not authorized`);
             }
+        }
 
     });
 };
@@ -240,15 +245,18 @@ const initApp = async () =>{
     generateTabFortTest();
     currentWordProposed = generatePosition(wordToGuess, true);
     // console.table(currentWordProposed);
+    // renderAllWordKeyboard(currentLettersKeyboards);
+    // renderWordBlocks('container_current_world', currentWordProposed);
     listenKeyboard();
+    renderWordBlocks('container_current_world', currentWordProposed);
 };
 
 initApp().then(res => res);
 
 //add function to calculate tests
 const getTestsRemaining = () =>{
-    console.log( `recept decremente test : ${MAX_TEST}`);
-    return (MAX_TEST < 0 ) ? MAX_TEST -= (MAX_TEST -1)  : 0;
+    // console.log( `recept decremente test : ${MAX_TEST}`);
+    // return (MAX_TEST < 0 ) ? MAX_TEST -= (MAX_TEST -1)  : 0;
 };
 
 //add function toDisplay test with wordGuest length * number test
@@ -256,6 +264,90 @@ const getTestsRemaining = () =>{
 //display letter in div
 // ---
 //add function to create div in container_word
+const renderWordBlocks = (containerID, wordArray) => {
+
+    console.log(`containerID : ${containerID} and ${wordArray}`);
+    console.table(wordArray);
+    const container = document.getElementById(`${containerID}`);
+
+    if (!container) {
+        console.error(`Element with ID '${containerID}' not found.`);
+        return;
+    }
+
+    const wordContainer = document.createElement('div');
+    wordContainer.classList.add('block_container');
+
+    wordArray.forEach((letterObj) => {
+        const letterBlock = document.createElement('div');
+        letterBlock.classList.add('block_letter');
+
+        // if (letterObj.value !== ' ') {
+            letterBlock.textContent = letterObj.value;
+        // }
+
+        wordContainer.appendChild(letterBlock);
+    });
+
+    container.appendChild(wordContainer);
+}
+
+const renderAllWordKeyboard = (element) =>{
+    for (const letters of element ){
+        for (const letter of letters ){
+            //         addTbody(`${el}`,  element[el]);
+            console.log(`letters`);
+            console.table(letters);
+            renderWordBlocks('container_world', letters);
+        }
+    }
+};
+
+const updateRender = (containerID, wordArray) => {
+    console.log(`updateRender`);
+    const container = document.getElementById(`${containerID}`);
+    if (!container) {
+        console.error(`updateRender - Aucun élément trouvé avec l'ID '${containerID}'`);
+        return;
+    }
+
+    const letterBlocks = container.querySelectorAll('.block_letter');
+
+    if (letterBlocks.length !== wordArray.length) {
+        console.warn('updateRender - The number of .block_letter elements does not match the wordArray.');
+    }
+
+    letterBlocks.forEach((letterBlock, index) => {
+        const letterObj = wordArray[index];
+        if (letterObj && letterObj.value !== ' ') {
+            letterBlock.textContent = letterObj.value;
+        } else {
+            letterBlock.textContent = '';
+        }
+    });
+}
+
+function applyStatusClassesToLastBlockLetters(wordArray) {
+    const containers = document.querySelectorAll('.block_container');
+    if (containers.length === 0) return;
+
+    const lastContainer = containers[containers.length - 1];
+
+    const letterBlocks = lastContainer.querySelectorAll('.block_letter');
+
+    letterBlocks.forEach((block, index) => {
+        const statut = wordArray[index]?.statut;
+
+        block.classList.remove('good', 'bad');
+
+        if (statut === 2) {
+            block.classList.add('good');
+        } else if (statut === 1) {
+            block.classList.add('bad');
+        }
+    });
+}
+
 
 //add function to give color to letter//
 

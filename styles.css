@@ -1,0 +1,38 @@
+:root {
+    --clr-btn-bg: #333;
+    --clr-btn-hover: #555;
+    --clr-text-light: #ffffff;
+
+    --clr-good-letter-bg: #008000;
+    --clr-bad-position-bg: #FFD700;
+    --clr-error-text: #b30000;
+}
+
+body {
+    margin: 6em;
+}
+
+.block_container {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.block_letter {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.block_letter.good {
+    background-color: var(--clr-good-letter-bg);
+}
+
+.block_letter.bad {
+    background-color: var(--clr-bad-position-bg);
+}
