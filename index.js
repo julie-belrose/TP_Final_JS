@@ -71,7 +71,7 @@ const getWordsToGuess = async (number, length) => {
 const generatePosition = (word, withStatut = false) =>{
     console.log(`generatePosition  + word : ${word}  , status : ${withStatut}`);
     return Array.from(word, (lettre, index) => ({
-        value: withStatut ? "" : lettre,
+        value: withStatut ? ' ' : lettre,
          position: index,
         ...(withStatut && { statut: 0 })
     }));
@@ -90,8 +90,17 @@ const generateTabFortTest = () =>{
 
 // ---
 //add function to delete key listen keyboard
-const deleteLetter = (letter) =>{
-
+const deleteLetter = () =>{
+    console.log('deleteLetter');
+        const deleteIndex = currentWordProposed.findLastIndex(obj => obj.value !== ' ');
+        if (deleteIndex !== -1) {
+            currentWordProposed[deleteIndex] = {
+                ...currentWordProposed[deleteIndex],
+                value: ' ',
+            };
+            console.log('deleteLetter');
+            console.table(currentWordProposed);
+        }
 };
 
 //add function to check word proposed if exists
@@ -109,7 +118,7 @@ const checkConditionValidation= () =>{
 const stockLettersProposed = (letter) =>{
     console.log('currentLetter in stockLettersProposed ' + letter);
     if (regexLettersFrench.test(letter)){
-        const emptyIndex = currentWordProposed.findIndex(obj => obj.value === '');
+        const emptyIndex = currentWordProposed.findIndex(obj => obj.value === ' ');
         if (emptyIndex !== -1) {
             currentWordProposed[emptyIndex] = {
                 ...currentWordProposed[emptyIndex],
@@ -118,17 +127,7 @@ const stockLettersProposed = (letter) =>{
             console.log('currentWordProposed');
             console.table(currentWordProposed);
         }
-
-        console.log(`stockLettersProposed : currentWordProposed`);
-        console.table(currentWordProposed)
     }
-
-
-    // if (regexLettersFrench.test(letter) && currentWordProposed.length < (MAX_LENGTH -1)) {
-    //     console.log('currentWord' + currentWordProposed);
-    //     console.log('max length' + MAX_LENGTH);
-    //     currentWordProposed.push(letter);
-    // }
     return currentWordProposed;
 };
 
