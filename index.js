@@ -108,17 +108,27 @@ const checkConditionValidation= () =>{
 //add function to stock data listen keyboard
 const stockLettersProposed = (letter) =>{
     console.log('currentLetter in stockLettersProposed ' + letter);
-    console.log('currentWord ' + currentWordProposed);
-    if (currentWordProposed.length === 0){ //todo delete this ?
-        generateTabFortTest();
+    if (regexLettersFrench.test(letter)){
+        const emptyIndex = currentWordProposed.findIndex(obj => obj.value === '');
+        if (emptyIndex !== -1) {
+            currentWordProposed[emptyIndex] = {
+                ...currentWordProposed[emptyIndex],
+                value: letter,
+            };
+            console.log('currentWordProposed');
+            console.table(currentWordProposed);
+        }
+
+        console.log(`stockLettersProposed : currentWordProposed`);
+        console.table(currentWordProposed)
     }
 
 
-    if (regexLettersFrench.test(letter) && currentWordProposed.length < (MAX_LENGTH -1)) {
-        console.log('currentWord' + currentWordProposed);
-        console.log('max length' + MAX_LENGTH);
-        currentWordProposed.push(letter);
-    }
+    // if (regexLettersFrench.test(letter) && currentWordProposed.length < (MAX_LENGTH -1)) {
+    //     console.log('currentWord' + currentWordProposed);
+    //     console.log('max length' + MAX_LENGTH);
+    //     currentWordProposed.push(letter);
+    // }
     return currentWordProposed;
 };
 
@@ -142,9 +152,9 @@ const listenKeyboard = () => {
         console.log(event.key)
         if (regexLettersFrench.test(event?.key)){
             codeKeyLetter = event.key;
+            console.log(`cond codeKeyLetter`);
         }
 
-        if ([...wordToGuess].length > [...currentWordProposed].length) {
             switch (key) {
                 case 'Backspace': //delete
                     console.log("Backspace key");
@@ -161,7 +171,6 @@ const listenKeyboard = () => {
                 default:
                     return console.error(`this key ${key.toUpperCase()} is not authorized`);
             }
-        }
 
     });
 };
@@ -174,6 +183,8 @@ const initApp = async () =>{
     console.log(`init wordToGuess init : ${wordToGuess}`);
     console.table(wordToGuessPosition);
     generateTabFortTest();
+    currentWordProposed = generatePosition(wordToGuess, true);
+    console.table(currentWordProposed);
     listenKeyboard();
 };
 
