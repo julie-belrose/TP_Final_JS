@@ -1,5 +1,6 @@
 const BASE_URL = "https://trouve-mot.fr/api";
-let MAX_TEST = 5;
+const MAX_TEST = 5;
+let currentTest = 0;
 let wordToGuess = ' ';
 let currentWordProposed = [];
 const allWordSolution = [];
@@ -14,6 +15,7 @@ const colorValid = '#008000';
 const colorSemiValid = '#FFD700'
 
 const regexLettersFrench = /^[a-zA-ZÀ-ÿ]$/;
+const regexRemoveAccentFr = /[\u0300-\u036f]/g;
 
 //call API
 const apiCall = async ({ url, method ="GET"})=> {
@@ -48,9 +50,9 @@ const randomLength = (max) =>{
 const selectRandomWords = (words) =>{
     const randomSelect = Math.floor(Math.random() * MAX_WORDS);
     wordToGuess = words[randomSelect].name;
+    wordToGuess =  wordToGuess.normalize('NFD').replace(regexRemoveAccentFr, '');
+    wordToGuess = wordToGuess.toUpperCase();
     console.log(`wordToGuess : ${wordToGuess}`);
-    // wordToGuessPosition = generatePosition(wordToGuess);
-    console.table(wordToGuessPosition);
 };
 
 //for give 10 words
@@ -71,12 +73,11 @@ const getWordsToGuess = async (number, length) => {
 const generatePosition = (word, withStatut = false) =>{
     console.log(`generatePosition  + word : ${word}  , status : ${withStatut}`);
     return Array.from(word, (lettre, index) => ({
-        value: withStatut ? ' ' : lettre,
+        value: withStatut ? ' ' : lettre.toUpperCase(),
          position: index,
         ...(withStatut && { statut: 0 })
     }));
 };
-
 
 //add tab for test
 const generateTabFortTest = () =>{
@@ -85,7 +86,7 @@ const generateTabFortTest = () =>{
         let tab = generatePosition( wordToGuess, true);
         currentLettersKeyboards.push(tab);
     }
-    console.table(currentLettersKeyboards);
+    // console.table(currentLettersKeyboards);
 };
 
 // ---
@@ -105,11 +106,66 @@ const deleteLetter = () =>{
 
 //add function to check word proposed if exists
 
+const saveNewProposition = (currentWordProposed) => {
+    console.log(`saveNewProposition`);
+    currentLettersKeyboards[currentTest] = [...currentWordProposed];
+    console.table(currentLettersKeyboards);
+}
+
+const newCycleProp = ()=>{
+    console.log(`currentTes before : ${currentTest}`);
+    currentTest++;
+    console.log(`currentTes actual : ${currentTest}`);
+    currentWordProposed = [];
+    currentWordProposed = generatePosition(wordToGuess, true);
+    // listenKeyboard();
+}
+
+const addStatutForNewProp = () => {
+    currentWordProposed.forEach((propLetter, index) => {
+        const correctLetter = wordToGuessPosition[index];
+
+        if (propLetter.value === correctLetter.value) {
+            propLetter.statut = 2; // 2 : correct position
+        } else if (
+            wordToGuessPosition.some(
+                (letter) => letter.value === propLetter.value
+            )
+        ) {
+            propLetter.statut = 1; // 1 : bad position
+        } else {
+            propLetter.statut = 0; // 0 : incorrect letter
+        }
+    });
+
+    console.log(`addStatutForNewProp`);
+    console.table(currentWordProposed);
+    return currentWordProposed;
+};
+
+const isGoodProp =()=> {
+    return currentWordProposed.every(obj => obj.statut === 2);
+}
+
 //add function to activate enter
 const checkConditionValidation= () =>{
-    if (  checkLengthCurrentWord()){
-        //do something
-        //compare position
+
+    console.log(`checkConditionValidation`);
+    const isFull = currentWordProposed.every(obj => obj.value !== ' ');
+
+    if (isFull){
+        addStatutForNewProp()
+        saveNewProposition(currentWordProposed);
+        const result = isGoodProp();
+        console.log(result);
+
+        if (isGoodProp() === false){
+            newCycleProp();
+            alert(`Nop Try Again you can, you have again ${MAX_TEST - currentTest} test`);
+        } else{
+            return alert(`Well done you have find good word ${wordToGuess} en ${currentTest +1} essai !`);
+        }
+
     }
 
 };
@@ -177,13 +233,13 @@ const listenKeyboard = () => {
 const initApp = async () =>{
     randomLength(MAX_LENGTH);
     await getWordsToGuess(MAX_WORDS, LENGTH_WORD_TO_GUESS).then(res => res);
-    console.log(`wordToGuess init : ${wordToGuess}`);
+    // console.log(`wordToGuess init : ${wordToGuess}`);
     wordToGuessPosition = generatePosition(wordToGuess);
-    console.log(`init wordToGuess init : ${wordToGuess}`);
-    console.table(wordToGuessPosition);
+    // console.log(`init wordToGuess init : ${wordToGuess}`);
+    // console.table(wordToGuessPosition);
     generateTabFortTest();
     currentWordProposed = generatePosition(wordToGuess, true);
-    console.table(currentWordProposed);
+    // console.table(currentWordProposed);
     listenKeyboard();
 };
 
