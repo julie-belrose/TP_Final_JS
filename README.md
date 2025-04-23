@@ -43,7 +43,7 @@
 ### Étape 4 : Intégration d’une API externe et vérification des mots
 
 1. Récupérer le **mot à deviner** via une **API externe**, par exemple :  
-   [https://random-word-api.herokuapp.com/](https://random-word-api.herokuapp.com/)
+   [https://trouve-mot.fr/](https://trouve-mot.fr/)
 2. Vérifier que les **mots saisis par l'utilisateur** existent dans un **dictionnaire** :
     - Soit via une **API externe**, une **bibliothèque**, ou un **fichier JSON local**.
 
